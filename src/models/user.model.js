@@ -47,7 +47,7 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save", async function(next) {
     if(!this.isModified("password")) return next();
 
-    this.password = bcrpyt.hash(this.password, 10)
+    this.password = await bcrpyt.hash(this.password, 10)
     next()
 })//dont use the arrow fun in pre callback as arrow fun dont have access to this kieyword and it is important here to know thw context of data being save for which we need this
 
