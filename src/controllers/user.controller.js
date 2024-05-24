@@ -16,7 +16,7 @@ const registerUser = asyncHandler( async (req,res) => {
     //check for user creation
 
     const { fullname, email, username, password } = req.body
-    console.log(`fullname: ${fullname}, email: ${email}, usename: ${username}, password: ${password} `)
+    // console.log(`fullname: ${fullname}, email: ${email}, usename: ${username}, password: ${password} `)
 
     //checking if entered credential are not empty
 
@@ -34,7 +34,7 @@ const registerUser = asyncHandler( async (req,res) => {
     }
 
     //if a user already exits with the provided username and email, it return it
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -42,9 +42,15 @@ const registerUser = asyncHandler( async (req,res) => {
         throw new ApiError(409, "user with email or username already exists")
     }
 
-    console.log(req.files?.avatar[0]?.path);
+    // console.log(req.files?.avatar[0]?.path);
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path;  //this gives error as if cover image is not passed it is null
+
+    let coverImageLocalPath;
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length>0) {
+        coverImageLocalPath = req.files.coverImage[0].path;
+    }
+
     if (!avatarLocalPath) {
         throw new ApiError(400,"Avatar file is required")
     }
